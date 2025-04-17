@@ -1,21 +1,23 @@
 package api
 
 import (
-	"net/http"
+	"fmt"
+	"golang-project/src/api/routers"
+	"golang-project/src/config"
 
 	"github.com/gin-gonic/gin"
 )
 
 func InitServer() {
+	cfg := config.GetConfig()
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 
 	v1 := r.Group("/api/v1")
 	{
-		v1.GET("/health", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "Working!"})
-		})
+		health := v1.Group("/health")
+		routers.Health(health)
 	}
 
-	r.Run(":5005") // اینجا r.Run درسته، نه c.Run
+	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
 }
