@@ -8,7 +8,7 @@ require (
 	github.com/spf13/viper v1.13.0
 )
 
-require gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+require gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect
@@ -42,7 +42,7 @@ require (
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

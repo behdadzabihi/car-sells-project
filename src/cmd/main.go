@@ -9,6 +9,8 @@ import (
 func main() {
 	cfg :=config.GetConfig()
 	cache.InitRedis(cfg)
+	db.InitDb(cfg)
 	defer cache.CloseRedis()
+	defer db.CloseDb()
 	api.InitServer()
 }
