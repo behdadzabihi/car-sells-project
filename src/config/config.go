@@ -12,6 +12,8 @@ type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
 	Redis    RedisConfig
+	Password PasswordConfig
+	Cors     CorsConfig
 }
 
 type ServerConfig struct {
@@ -36,6 +38,19 @@ type RedisConfig struct {
 	MinIdleConnections int
 	PoolSize           int
 	PoolTimeout        int
+}
+
+type PasswordConfig struct {
+	IncludeChars     bool
+	IncludeDigits    bool
+	MinLength        int
+	MaxLength        int
+	IncludeUppercase bool
+	IncludeLowercase bool
+}
+
+type CorsConfig struct {
+	AllowOrigins string
 }
 
 func GetConfig() *Config {
