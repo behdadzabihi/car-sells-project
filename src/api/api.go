@@ -16,11 +16,13 @@ func InitServer() {
 	cfg := config.GetConfig()
 	r := gin.New()
 
-	val, ok := binding.Validator.Engine().(*validator.Validate)
-	if ok{
-		val.RegisterValidation("mobile",validations.IranianMobileNumberValidator,true)
-		val.RegisterValidation("password",validations.PasswordValidator,true)
-	}
+	RegisterRoutes(r,cfg)
+	RegisterValidation()
+
+	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
+}
+
+func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
 	r.Use(middlewares.Cors(cfg))
 	r.Use(gin.Logger(), gin.Recovery())
 
@@ -29,6 +31,14 @@ func InitServer() {
 		health := v1.Group("/health")
 		routers.Health(health)
 	}
+}
 
-	r.Run(fmt.Sprintf(":%s", cfg.Server.Port))
+
+func RegisterValidation(){
+	val, ok := binding.Validator.Engine().(*validator.Validate)
+	if ok{
+		val.RegisterValidation("mobile",validations.IranianMobileNumberValidator,true)
+		val.RegisterValidation("password",validations.PasswordValidator,true)
+	}
+
 }
