@@ -2,8 +2,6 @@ package logging
 
 import "golang-project/src/config"
 
-
-
 type Logger interface {
 	Init()
 
@@ -24,5 +22,5 @@ type Logger interface {
 }
 
 func NewZapLogger(cfg *config.Config) Logger {
-	return &ZapLogger{cfg: cfg}
+	return newZapLogger(cfg)
 }

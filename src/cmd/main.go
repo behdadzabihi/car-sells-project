@@ -3,6 +3,7 @@ package main
 import (
 	"golang-project/src/api"
 	"golang-project/src/config"
+
 	"golang-project/src/data/cache"
 	"golang-project/src/data/db"
 	"golang-project/src/pkg/logging"
@@ -10,7 +11,7 @@ import (
 
 func main() {
 	cfg := config.GetConfig()
-	logger := logging.NewZapLogger(cfg)
+	logger:= logging.NewZapLogger(cfg)
 	err := cache.InitRedis(cfg)
 	defer cache.CloseRedis()
 	if err != nil {
@@ -23,5 +24,6 @@ func main() {
 	}
 
 	defer db.CloseDb()
-	api.InitServer()
+    logger.Info(logging.Postgres, logging.Startup,"log init", nil)
+    api.InitServer()
 }
