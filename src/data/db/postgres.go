@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"golang-project/src/config"
-	"log"
+	"golang-project/src/pkg/logging"
 
 	"time"
 
@@ -12,6 +12,7 @@ import (
 )
 
 var dbClient *gorm.DB
+var logger = logging.NewZapLogger(config.GetConfig())
 
 func InitDb(cfg *config.Config) error {
 	var err error
@@ -34,7 +35,7 @@ func InitDb(cfg *config.Config) error {
 	sqlDb.SetMaxOpenConns(cfg.Postgres.MaxOpenConns)
 	sqlDb.SetConnMaxLifetime(cfg.Postgres.ConnMaxLifetime * time.Minute)
 
-	log.Println("Db connection established")
+	logger.Info(logging.Validation, logging.MobileValidation, err.Error(), nil)
 	return nil
 }
 

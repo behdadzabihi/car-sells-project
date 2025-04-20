@@ -1,23 +1,27 @@
 package main
 
 import (
-	"log"
-
 	"golang-project/src/api"
 	"golang-project/src/config"
 	"golang-project/src/data/cache"
 	"golang-project/src/data/db"
+	"golang-project/src/pkg/logging"
 )
 
 func main() {
-	cfg :=config.GetConfig()
-	var err error
+	cfg := config.GetConfig()
+	logger := logging.NewZapLogger(cfg)
+	err := cache.InitRedis(cfg)
+	defer cache.CloseRedis()
+	if err != nil {
+		logger.Fatal(logging.Redis, logging.Startup, err.Error(), nil)
+	}
 	err = db.InitDb(cfg)
 
 	if err != nil {
-		log.Fatalf("error in init db %v", err)
+		logger.Fatal(logging.Postgres, logging.Startup, err.Error(), nil)
 	}
-	defer cache.CloseRedis()
+
 	defer db.CloseDb()
 	api.InitServer()
 }
