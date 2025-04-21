@@ -58,7 +58,7 @@ func (l *zapLogger) Init() {
 	logger := zap.New(core, zap.AddCaller(),
 		zap.AddCallerSkip(1),
 		zap.AddStacktrace(zap.ErrorLevel)).Sugar()
-
+	logger = logger.With("AppName", "MyApp", "LoggerName", "zap")
 	l.logger = logger
 }
 
@@ -68,7 +68,7 @@ func (l *zapLogger) Debug(cat Category, sub SubCategory, msg string, extra map[E
 }
 
 func (l *zapLogger) Debugf(template string, args ...interface{}) {
-	l.logger.Debugf(template, args...)
+	l.logger.Debugf(template, args...) 
 }
 
 func (l *zapLogger) Info(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{}) {

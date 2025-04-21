@@ -1,11 +1,12 @@
 module golang-project
 
-go 1.21.13
+go 1.21
 
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/go-redis/redis/v7 v7.4.1
+	github.com/rs/zerolog v1.34.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
@@ -17,6 +18,8 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.5.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 
