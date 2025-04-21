@@ -3,10 +3,14 @@ package logging
 import (
 	"golang-project/src/config"
 	"os"
+	"sync"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
 )
+
+var once sync.Once
+var zeroSinLogger *zerolog.Logger
 
 type zeroLogger struct {
 	cfg    *config.Config
@@ -36,20 +40,23 @@ func (l *zeroLogger) getLogLevel() zerolog.Level {
 }
 
 func (l *zeroLogger) Init() {
-	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	file, err := os.OpenFile(l.cfg.Logger.FilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
-	if err != nil {
-		panic("failed to open log file")
-	}
-	var logger = zerolog.New(file).
-		With().
-		Timestamp().
-		Str("AppName", "MyApp").
-		Str("LoggerName", "zerolog").
-		Logger()
+	once.Do(func() {
+		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+		file, err := os.OpenFile(l.cfg.Logger.FilePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+		if err != nil {
+			panic("failed to open log file")
+		}
+		var logger = zerolog.New(file).
+			With().
+			Timestamp().
+			Str("AppName", "MyApp").
+			Str("LoggerName", "zerolog").
+			Logger()
 
-	zerolog.SetGlobalLevel(l.getLogLevel())
-	l.logger = &logger
+		zerolog.SetGlobalLevel(l.getLogLevel())
+		zeroSinLogger = &logger
+	})
+	l.logger = zeroSinLogger
 
 }
 

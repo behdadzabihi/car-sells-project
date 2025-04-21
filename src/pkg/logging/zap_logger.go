@@ -9,13 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var zapLogLevelMapping = map[string]zapcore.Level{
-	"debug": zapcore.DebugLevel,
-	"info":  zapcore.InfoLevel,
-	"warn":  zapcore.WarnLevel,
-	"error": zapcore.ErrorLevel,
-	"fatal": zapcore.FatalLevel,
-}
+var zapSinLogger *zap.SugaredLogger
 
 type zapLogger struct {
 	cfg    *config.Config
@@ -28,6 +22,14 @@ func newZapLogger(cfg *config.Config) *zapLogger {
 	return logger
 }
 
+var zapLogLevelMapping = map[string]zapcore.Level{
+	"debug": zapcore.DebugLevel,
+	"info":  zapcore.InfoLevel,
+	"warn":  zapcore.WarnLevel,
+	"error": zapcore.ErrorLevel,
+	"fatal": zapcore.FatalLevel,
+}
+
 func (l *zapLogger) getLogLevel() zapcore.Level {
 	level, exists := zapLogLevelMapping[l.cfg.Logger.Level]
 	if !exists {
@@ -37,29 +39,32 @@ func (l *zapLogger) getLogLevel() zapcore.Level {
 }
 
 func (l *zapLogger) Init() {
-	w := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   l.cfg.Logger.FilePath,
-		MaxSize:    1,
-		MaxAge:     5,
-		LocalTime:  true,
-		MaxBackups: 3,
-		Compress:   true,
+	once.Do(func() {
+		w := zapcore.AddSync(&lumberjack.Logger{
+			Filename:   l.cfg.Logger.FilePath,
+			MaxSize:    1,
+			MaxAge:     5,
+			LocalTime:  true,
+			MaxBackups: 3,
+			Compress:   true,
+		})
+
+		config := zap.NewProductionEncoderConfig()
+		config.EncodeTime = zapcore.ISO8601TimeEncoder
+
+		core := zapcore.NewCore(
+			zapcore.NewJSONEncoder(config),
+			w,
+			l.getLogLevel(),
+		)
+
+		logger := zap.New(core, zap.AddCaller(),
+			zap.AddCallerSkip(1),
+			zap.AddStacktrace(zap.ErrorLevel)).Sugar()
+		logger = logger.With("AppName", "MyApp", "LoggerName", "zap")
+		zapSinLogger = logger
 	})
-
-	config := zap.NewProductionEncoderConfig()
-	config.EncodeTime = zapcore.ISO8601TimeEncoder
-
-	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(config),
-		w,
-		l.getLogLevel(),
-	)
-
-	logger := zap.New(core, zap.AddCaller(),
-		zap.AddCallerSkip(1),
-		zap.AddStacktrace(zap.ErrorLevel)).Sugar()
-	logger = logger.With("AppName", "MyApp", "LoggerName", "zap")
-	l.logger = logger
+	l.logger = zapSinLogger
 }
 
 func (l *zapLogger) Debug(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{}) {
@@ -68,7 +73,7 @@ func (l *zapLogger) Debug(cat Category, sub SubCategory, msg string, extra map[E
 }
 
 func (l *zapLogger) Debugf(template string, args ...interface{}) {
-	l.logger.Debugf(template, args...) 
+	l.logger.Debugf(template, args...)
 }
 
 func (l *zapLogger) Info(cat Category, sub SubCategory, msg string, extra map[ExtraKey]interface{}) {
