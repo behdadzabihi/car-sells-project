@@ -35,7 +35,7 @@ func InitDb(cfg *config.Config) error {
 	sqlDb.SetMaxOpenConns(cfg.Postgres.MaxOpenConns)
 	sqlDb.SetConnMaxLifetime(cfg.Postgres.ConnMaxLifetime * time.Minute)
 
-	logger.Info(logging.Validation, logging.MobileValidation, err.Error(), nil)
+	logger.Info(logging.Validation, logging.MobileValidation, "connected with postgres db", nil)
 	return nil
 }
 
