@@ -21,7 +21,7 @@ type Logger interface {
 	Fatalf(template string, args ...interface{})
 }
 
-func NewZapLogger(cfg *config.Config) Logger {
+func NewLogger(cfg *config.Config) Logger {
 	if cfg.Logger.Logger == "zap" {
 		return newZapLogger(cfg)
 	} else if cfg.Logger.Logger == "zero" {

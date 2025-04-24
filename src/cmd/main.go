@@ -11,7 +11,7 @@ import (
 
 func main() {
 	cfg := config.GetConfig()
-	logger:= logging.NewZapLogger(cfg)
+	logger := logging.NewLogger(cfg)
 	err := cache.InitRedis(cfg)
 	defer cache.CloseRedis()
 	if err != nil {
@@ -24,6 +24,6 @@ func main() {
 	}
 
 	defer db.CloseDb()
-    logger.Info(logging.Postgres, logging.Startup,"log init", nil)
-    api.InitServer()
+	logger.Info(logging.Postgres, logging.Startup, "log init", nil)
+	api.InitServer()
 }
